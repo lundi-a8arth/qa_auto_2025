@@ -28,4 +28,3 @@ def test_not_found_request():
     assert body['message'] == 'Not Found'
     assert r.status_code == 404
     assert r.headers['Server'] == 'github.com'
-    
