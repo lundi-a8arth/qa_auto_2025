@@ -26,3 +26,4 @@ def test_repo_cannot_be_found(github_api):
 def test_find_repo_with_single_char(github_api):
     r = github_api.search_repo('a')
     assert r['total_count'] != 0
+
