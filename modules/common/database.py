@@ -47,6 +47,34 @@ class Database():
         query = f"DELETE FROM products WHERE id = {product_id}"
         self.cursor.execute(query)
         self.connection.commit()
+    
+    def insert_new_customer(self, customer_id, name, address, city, postalCode, country):
+        query = f"INSERT OR REPLACE INTO customers (id, name, address, city, postalCode, country) \
+            VALUES ({customer_id}, '{name}', '{address}', '{city}', '{postalCode}', '{country}')"
+        self.cursor.execute(query)
+        self.connection.commit()
+
+    def delete_customer(self, customer_id):
+        query = f"DELETE FROM customers WHERE id = {customer_id}"
+        self.cursor.execute(query)
+        self.connection.commit()
+    
+    def change_customer_address_by_id(self, customer_id, address, city, postalCode, country):
+        query = f'''
+            UPDATE customers 
+            SET address = '{address}', 
+                city = '{city}', 
+                postalCode = '{postalCode}', 
+                country = '{country}'
+            WHERE id = {customer_id}'''
+        self.cursor.execute(query)
+        self.connection.commit()
+
+    def select_customers_quantity_by_name(self, customer_name):
+        query = f"SELECT * FROM customers WHERE name = '{customer_name}'"
+        self.cursor.execute(query)
+        record = self.cursor.fetchall()
+        return record
 
     def get_detailed_orders(self):
         query = """
