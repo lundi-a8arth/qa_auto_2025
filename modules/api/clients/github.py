@@ -1,9 +1,22 @@
+import os
 import requests
+from dotenv import load_dotenv
 
 
 class GitHub:
 
-    def get_user(self, username):
+    def __init__(self):
+        load_dotenv()
+        
+        token = os.getenv("GITHUB_TOKEN")
+
+        self.headers = {}
+        if token:
+            self.headers = {
+                "Authorization": f"Bearer {token}"
+            }
+
+    def get_user_by_username(self, username):
         r = requests.get(f"https://api.github.com/users/{username}")
         body = r.json()
 
