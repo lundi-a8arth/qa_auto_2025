@@ -13,7 +13,7 @@ class Database:
         sqlite_select_Query = "SELECT sqlite_version();"
         self.cursor.execute(sqlite_select_Query)
         record = self.cursor.fetchall()
-        print(f"Connected successfully. SQLite Database Version is: {record}")
+        return record
 
     def get_all_users(self):
         query = "SELECT name, address, city FROM customers"

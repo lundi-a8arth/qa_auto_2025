@@ -3,22 +3,25 @@ from modules.common.database import Database
 
 
 @pytest.mark.database
-def test_database_connection():
-    db = Database()
-    db.test_connection()
+def test_database_connection(db):
+    version = db.test_connection()
+
+    sqlite_version = version[0][0]
+    assert (
+        sqlite_version == "3.50.4"
+    ), f"Expected SQLite Version is 3.50.4, got {sqlite_version}"
+    print(f"Connected successfully. SQLite Database Version is: {sqlite_version}")
 
 
 @pytest.mark.database
-def test_check_all_users():
-    db = Database()
+def test_check_all_users(db):
     users = db.get_all_users()
 
     print(users)
 
 
 @pytest.mark.database
-def test_find_address_by_name():
-    db = Database()
+def test_find_address_by_name(db):
     user = db.get_user_adress_by_name("Sergii")
 
     assert user[0][0] == "Maydan Nezalezhnosti 1"
@@ -28,8 +31,7 @@ def test_find_address_by_name():
 
 
 @pytest.mark.database
-def test_product_qnt_by_id():
-    db = Database()
+def test_product_qnt_by_id(db):
     db.update_product_qnt_by_id(1, 25)
     water_qnt = db.select_product_qnt_by_id(1)
 
@@ -37,8 +39,7 @@ def test_product_qnt_by_id():
 
 
 @pytest.mark.database
-def test_insert_product_to_db():
-    db = Database()
+def test_insert_product_to_db(db):
     db.insert_new_product(4, "печиво", "солодке", 30)
     cookie_qnt = db.select_product_qnt_by_id(4)
 
@@ -46,8 +47,7 @@ def test_insert_product_to_db():
 
 
 @pytest.mark.database
-def test_delete_product_from_db():
-    db = Database()
+def test_delete_product_from_db(db):
     db.insert_new_product(99, "test name", "test description", 999)
     db.delete_product(99)
     qnt = db.select_product_qnt_by_id(99)
@@ -56,8 +56,7 @@ def test_delete_product_from_db():
 
 
 @pytest.mark.database
-def test_insert_customer_to_db():
-    db = Database()
+def test_insert_customer_to_db(db):
     db.insert_new_customer(3, "Dmytro", "Ivasiuka 16D", "Kyiv", "04210", "Ukraine")
     user = db.get_user_adress_by_name("Dmytro")
 
@@ -65,8 +64,7 @@ def test_insert_customer_to_db():
 
 
 @pytest.mark.database
-def test_change_customer_address():
-    db = Database()
+def test_change_customer_address(db):
     db.change_customer_address_by_id(3, "Khreschatyk 1", "Kyiv", "00001", "Ukraine")
     user = db.get_user_adress_by_name("Dmytro")
 
@@ -74,8 +72,7 @@ def test_change_customer_address():
 
 
 @pytest.mark.database
-def test_customer_delete():
-    db = Database()
+def test_customer_delete(db):
     db.insert_new_customer(
         666, "Eugene", "Test Address", "Test City", "11111", "Test Country"
     )
@@ -87,16 +84,14 @@ def test_customer_delete():
 
 
 @pytest.mark.database
-def test_customers_qnt_by_name():
-    db = Database()
+def test_customers_qnt_by_name(db):
     result = db.select_customers_quantity_by_name("Alex")
 
     assert len(result) == 2
 
 
 @pytest.mark.database
-def test_detailed_orders():
-    db = Database()
+def test_detailed_orders(db):
     orders = db.get_detailed_orders()
     print("Замовлення", orders)
     # Check quantity of orders equal to 1
