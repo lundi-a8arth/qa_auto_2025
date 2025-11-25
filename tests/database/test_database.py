@@ -16,7 +16,7 @@ def test_database_connection(db):
 @pytest.mark.database
 def test_check_all_users(db):
     users = db.get_all_users()
-
+    assert len(users) >= 1, "Expected at least one user in the database"
     print(users)
 
 
@@ -57,10 +57,10 @@ def test_delete_product_from_db(db):
 
 @pytest.mark.database
 def test_insert_customer_to_db(db):
-    db.insert_new_customer(3, "Dmytro", "Ivasiuka 16D", "Kyiv", "04210", "Ukraine")
+    db.insert_new_customer(3, "Dmytro", "Yaroslaviv Val 1", "Kyiv", "04210", "Ukraine")
     user = db.get_user_adress_by_name("Dmytro")
 
-    assert user[0][0] == "Ivasiuka 16D"
+    assert user[0][0] == "Yaroslaviv Val 1"
 
 
 @pytest.mark.database
