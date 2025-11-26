@@ -40,7 +40,7 @@ def test_product_qnt_by_id(db):
 
 @pytest.mark.database
 def test_insert_product_to_db(db):
-    db.insert_new_product(4, "печиво", "солодке", 30)
+    db.insert_new_product(4, "cookies", "with chocolate", 30)
     cookie_qnt = db.select_product_qnt_by_id(4)
 
     assert cookie_qnt[0][0] == 30
@@ -91,14 +91,45 @@ def test_customers_qnt_by_name(db):
 
 
 @pytest.mark.database
+def test_create_order(db):
+    db.insert_new_order(3, 2, 4, "2025-12-30")
+    result = db.get_order(3)
+    assert result[0] == 3
+
+
+@pytest.mark.database
+def test_update_order(db):
+    db.insert_new_order(100, 99, 99, "2025-12-31")
+    order_before_update = db.get_order(100)
+    assert order_before_update[0] == 100
+    assert order_before_update[1] == 99
+    assert order_before_update[2] == 99
+    db.update_order(100, 7, 7)
+    order_after_update = db.get_order(100)
+    assert order_after_update[0] == 100
+    assert order_after_update[1] == 7
+    assert order_after_update[2] == 7
+
+
+@pytest.mark.database
+def test_delete_order(db):
+    db.insert_new_order(99, 99, 99, "2025-12-31")
+    result = db.get_order(99)
+    assert result[0] == 99
+    db.delete_order(99)
+    result = db.get_order(99)
+    assert result is None
+
+
+@pytest.mark.database
 def test_detailed_orders(db):
     orders = db.get_detailed_orders()
-    print("Замовлення", orders)
-    # Check quantity of orders equal to 1
-    assert len(orders) == 1
+    print("Orders: ", orders)
+    # Check quantity of orders equal to 4
+    assert len(orders) == 4
 
     # Check structure of data
     assert orders[0][0] == 1
     assert orders[0][1] == "Sergii"
-    assert orders[0][2] == "солодка вода"
-    assert orders[0][3] == "з цукром"
+    assert orders[0][2] == "soda"
+    assert orders[0][3] == "with sugar"

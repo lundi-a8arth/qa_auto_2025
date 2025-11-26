@@ -82,6 +82,44 @@ class Database:
         record = self.cursor.fetchall()
         return record
 
+    def get_order(self, order_id):
+        query = f"SELECT * FROM orders WHERE id = {order_id}"
+        self.cursor.execute(query)
+        record = self.cursor.fetchone()
+
+        if record is None:
+            print(f"No order found with id={order_id}")
+            return None
+
+        return record
+
+    def insert_new_order(self, order_id, customer_id, product_id, date):
+        query = f"INSERT OR REPLACE INTO orders (id, customer_id, product_id, order_date) \
+            VALUES ({order_id},{customer_id},{product_id},'{date}')"
+        self.cursor.execute(query)
+        self.connection.commit()
+
+    def update_order(self, order_id, customer_id=None, product_id=None):
+        fields = []
+
+        if customer_id is not None:
+            fields.append(f"customer_id = {customer_id}")
+
+        if product_id is not None:
+            fields.append(f"product_id = {product_id}")
+
+        if not fields:
+            return False
+
+        query = f"UPDATE orders SET {', '.join(fields)} WHERE id = {order_id}"
+        self.cursor.execute(query)
+        self.connection.commit()
+
+    def delete_order(self, order_id):
+        query = f"DELETE from orders WHERE id = {order_id}"
+        self.cursor.execute(query)
+        self.connection.commit()
+
     def get_detailed_orders(self):
         query = """
             SELECT 
