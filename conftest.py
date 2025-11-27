@@ -28,4 +28,4 @@ def db():
 def login_page():
     login_page = LoginPage()
     yield login_page
-    login_page.close
+    login_page.quit
