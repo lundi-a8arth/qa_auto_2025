@@ -3,6 +3,7 @@ from modules.api.clients.github import GitHub
 from modules.common.database import Database
 from modules.ui.page_objects.login_page import LoginPage
 from modules.ui.page_objects.exceptions_page import ExceptionsPage
+from modules.ui.page_objects.table_practice_page import TablePractice
 
 
 @pytest.fixture
@@ -37,3 +38,10 @@ def exceptions_page():
     exceptions_page = ExceptionsPage()
     yield exceptions_page
     exceptions_page.quit()
+
+
+@pytest.fixture
+def table_practice_page():
+    table_practice_page = TablePractice()
+    yield table_practice_page
+    table_practice_page.quit()
