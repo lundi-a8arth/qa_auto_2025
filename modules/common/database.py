@@ -22,69 +22,73 @@ class Database:
         return record
 
     def get_user_adress_by_name(self, name):
-        query = f"SELECT address, city, postalCode, country \
-            FROM customers WHERE name = '{name}'"
-        self.cursor.execute(query)
+        query = """SELECT address, city, postalCode, country \
+            FROM customers WHERE name = ?"""
+        self.cursor.execute(query, (name,))
         record = self.cursor.fetchall()
         return record
 
-    def update_product_qnt_by_id(self, product_id, qnt):
-        query = f"UPDATE products SET quantity = {qnt} WHERE id = {product_id}"
-        self.cursor.execute(query)
+    def update_product_qnt_by_id(self, qnt, product_id):
+        query = """UPDATE products SET quantity = ? WHERE id = ?"""
+        params = (qnt, product_id)
+        self.cursor.execute(query, params)
         self.connection.commit()
 
     def select_product_qnt_by_id(self, product_id):
-        query = f"SELECT quantity FROM products WHERE id = {product_id}"
-        self.cursor.execute(query)
+        query = """SELECT quantity FROM products WHERE id = ?"""
+        self.cursor.execute(query, (product_id,))
         record = self.cursor.fetchall()
         return record
 
     def insert_new_product(self, product_id, name, description, qnt):
-        query = f"INSERT OR REPLACE INTO products (id, name, description, quantity) \
-            VALUES ({product_id}, '{name}', '{description}', {qnt})"
-        self.cursor.execute(query)
+        query = """INSERT OR REPLACE INTO products (id, name, description, quantity) \
+            VALUES (?, ?, ?, ?)"""
+        params = (product_id, name, description, qnt)
+        self.cursor.execute(query, params)
         self.connection.commit()
 
     def delete_product(self, product_id):
-        query = f"DELETE FROM products WHERE id = {product_id}"
-        self.cursor.execute(query)
+        query = """DELETE FROM products WHERE id = ?"""
+        self.cursor.execute(query, (product_id,))
         self.connection.commit()
 
     def insert_new_customer(
         self, customer_id, name, address, city, postalCode, country
     ):
-        query = f"INSERT OR REPLACE INTO customers (id, name, address, city, postalCode, country) \
-            VALUES ({customer_id}, '{name}', '{address}', '{city}', '{postalCode}', '{country}')"
-        self.cursor.execute(query)
+        query = """INSERT OR REPLACE INTO customers (id, name, address, city, postalCode, country) \
+            VALUES (?, ?, ?, ?, ?, ?)"""
+        params = (customer_id, name, address, city, postalCode, country)
+        self.cursor.execute(query, params)
         self.connection.commit()
 
     def delete_customer(self, customer_id):
-        query = f"DELETE FROM customers WHERE id = {customer_id}"
-        self.cursor.execute(query)
+        query = """DELETE FROM customers WHERE id = ?"""
+        self.cursor.execute(query, (customer_id,))
         self.connection.commit()
 
     def change_customer_address_by_id(
         self, customer_id, address, city, postalCode, country
     ):
-        query = f"""
+        query = """
             UPDATE customers 
-            SET address = '{address}', 
-                city = '{city}', 
-                postalCode = '{postalCode}', 
-                country = '{country}'
-            WHERE id = {customer_id}"""
-        self.cursor.execute(query)
+            SET address = ?, 
+                city = ?, 
+                postalCode = ?, 
+                country = ?
+            WHERE id = ?"""
+        params = (address, city, postalCode, country, customer_id)
+        self.cursor.execute(query, params)
         self.connection.commit()
 
     def select_customers_quantity_by_name(self, customer_name):
-        query = f"SELECT * FROM customers WHERE name = '{customer_name}'"
-        self.cursor.execute(query)
+        query = """SELECT * FROM customers WHERE name = ?"""
+        self.cursor.execute(query, (customer_name,))
         record = self.cursor.fetchall()
         return record
 
     def get_order(self, order_id):
-        query = f"SELECT * FROM orders WHERE id = {order_id}"
-        self.cursor.execute(query)
+        query = """SELECT * FROM orders WHERE id = ?"""
+        self.cursor.execute(query, (order_id,))
         record = self.cursor.fetchone()
 
         if record is None:
@@ -95,29 +99,35 @@ class Database:
 
     def insert_new_order(self, order_id, customer_id, product_id, date):
         query = f"INSERT OR REPLACE INTO orders (id, customer_id, product_id, order_date) \
-            VALUES ({order_id},{customer_id},{product_id},'{date}')"
-        self.cursor.execute(query)
+            VALUES (?, ?, ?, ?)"
+        params = (order_id, customer_id, product_id, date)
+        self.cursor.execute(query, params)
         self.connection.commit()
 
     def update_order(self, order_id, customer_id=None, product_id=None):
         fields = []
+        params = []
 
         if customer_id is not None:
-            fields.append(f"customer_id = {customer_id}")
+            fields.append("customer_id = ?")
+            params.append(customer_id)
 
         if product_id is not None:
-            fields.append(f"product_id = {product_id}")
+            fields.append("product_id = ?")
+            params.append(product_id)
 
         if not fields:
             return False
 
-        query = f"UPDATE orders SET {', '.join(fields)} WHERE id = {order_id}"
-        self.cursor.execute(query)
+        params.append(order_id)
+
+        query = f"UPDATE orders SET {', '.join(fields)} WHERE id = ?"
+        self.cursor.execute(query, tuple(params))
         self.connection.commit()
 
     def delete_order(self, order_id):
-        query = f"DELETE from orders WHERE id = {order_id}"
-        self.cursor.execute(query)
+        query = """DELETE from orders WHERE id = ?"""
+        self.cursor.execute(query, (order_id,))
         self.connection.commit()
 
     def get_detailed_orders(self):
